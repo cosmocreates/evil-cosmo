@@ -1,0 +1,11 @@
+{
+  "name": "evil-cosmo",
+  "version": "0.0.0",
+  "description": "The main bot for the COSMO STUDIOS Discord server.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "author": "cosmo",
+  "license": "GNU"
+}
