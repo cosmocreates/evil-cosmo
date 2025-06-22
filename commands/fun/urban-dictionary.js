@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { primaryEmbedColor } = require('../../settings/config.json')
 const { request } = require('undici');
 const { trim } = require('../../tools/string');
 
@@ -53,15 +54,15 @@ module.exports = {
 			'd': 'Most Dislikes',
 			'r': 'Random'
 		};
-		
+
 		const embed = new EmbedBuilder()
-			.setColor(0x981426)
+			.setColor(primaryEmbedColor)
 			.setAuthor({ name: `"${term}"`, url: selectedPost.permalink })
 			.setDescription(`-# Content is not filtered. Use at your own risk.`)
 			.addFields(
 				{ name: 'Definition', value: trim(selectedPost.definition, 512) },
 				{ name: 'Example', value: trim(selectedPost.example, 512) },
-				{ name: 'Rating', value: `<:thumbs_down:1386095758473957557> \`${selectedPost.thumbs_down}\` • <:thumbs_up:1386095747509784586> \`${selectedPost.thumbs_up}\`` },
+				{ name: 'Rating', value: `<:thumbs_up:1386095747509784586> \`${selectedPost.thumbs_up}\` • <:thumbs_down:1386095758473957557> \`${selectedPost.thumbs_down}\`` },
 				{ name: 'Search Method', value: modeMapping[mode] })
 			.setFooter({ text: 'Urban Dictionary' });
 
