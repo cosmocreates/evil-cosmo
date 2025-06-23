@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const { primaryEmbedColor } = require('../../settings/config.json')
+const { primaryEmbedColor } = require('../../settings/config.json');
 const { request } = require('undici');
 const { trim } = require('../../tools/string');
 
@@ -8,11 +8,11 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('urban-dictionary')
 		.setDescription('Search a term in Urban Dictionary.')
-		.addStringOption(option => 
+		.addStringOption(option =>
 			option.setName('term')
 				.setDescription('What term are you looking for?')
 				.setMaxLength(50)
-				.setRequired(true)
+				.setRequired(true),
 		)
 		.addStringOption(option =>
 			option.setName('mode')
@@ -22,7 +22,7 @@ module.exports = {
 					{ name: 'Most Dislikes', value: 'd' },
 					{ name: 'Random', value: 'r' },
 				)
-				.setRequired(false)
+				.setRequired(false),
 		),
 
 	async execute(interaction) {
@@ -34,7 +34,7 @@ module.exports = {
 
 		const dictResult = await request(`https://api.urbandictionary.com/v0/define?${query}`);
 		const { list } = await dictResult.body.json();
-		
+
 		if (!list.length) {
 			return interaction.editReply(`No results found for **${term}**.`);
 		}
@@ -43,22 +43,24 @@ module.exports = {
 
 		if (mode === 'l') {
 			selectedPost = list.sort((a, b) => b.thumbs_up - a.thumbs_up)[0];
-		} else if (mode === 'd') {
+		}
+		else if (mode === 'd') {
 			selectedPost = list.sort((a, b) => b.thumbs_down - a.thumbs_down)[0];
-		} else if (mode === 'r') {
+		}
+		else if (mode === 'r') {
 			selectedPost = list[Math.floor(Math.random() * list.length)];
 		}
 
 		const modeMapping = {
 			'l': 'Most Likes',
 			'd': 'Most Dislikes',
-			'r': 'Random'
+			'r': 'Random',
 		};
 
 		const embed = new EmbedBuilder()
 			.setColor(primaryEmbedColor)
 			.setAuthor({ name: `"${term}"`, url: selectedPost.permalink })
-			.setDescription(`-# Content is not filtered. Use at your own risk.`)
+			.setDescription('-# Content is not filtered. Use at your own risk.')
 			.addFields(
 				{ name: 'Definition', value: trim(selectedPost.definition, 512) },
 				{ name: 'Example', value: trim(selectedPost.example, 512) },

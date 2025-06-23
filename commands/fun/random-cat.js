@@ -1,7 +1,15 @@
-const { SlashCommandBuilder, EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { theCatApiKey } = require('../../settings/secrets.json');
-const { primaryEmbedColor } = require('../../settings/config.json')
+const { primaryEmbedColor } = require('../../settings/config.json');
 const { request } = require('undici');
+
+async function getApiBodyResponse(path) {
+	const apiResponse = await request(`https://api.thecatapi.com/v1/${path}`, {
+		headers: { 'x-api-key': theCatApiKey },
+	});
+	const body = await apiResponse.body.json();
+	return body;
+}
 
 module.exports = {
 	cooldown: 5,
@@ -13,15 +21,12 @@ module.exports = {
 			option.setName('breed')
 				.setDescription('Choose a cat breed')
 				.setRequired(false)
-				.setAutocomplete(true)
+				.setAutocomplete(true),
 		),
 
 	async autocomplete(interaction) {
 		const focusedValue = interaction.options.getFocused();
-		const apiResponse = await request(`https://api.thecatapi.com/v1/breeds`, {
-			headers: { 'x-api-key': theCatApiKey }
-		});
-		const breeds = await apiResponse.body.json();
+		const breeds = await getApiBodyResponse('breeds');
 		const filtered = breeds
 			.filter(breed => breed.name.toLowerCase().includes(focusedValue.toLowerCase()))
 			.slice(0, 25)
@@ -30,26 +35,20 @@ module.exports = {
 		await interaction.respond(filtered);
 	},
 
-    async execute(interaction) {
+	async execute(interaction) {
 	    await interaction.deferReply();
 
 	    const selectedBreed = interaction.options.getString('breed');
 	    let breedName = null;
 
 	    if (selectedBreed) {
-	    	const breedListResponse = await request(`https://api.thecatapi.com/v1/breeds`, {
-	    		headers: { 'x-api-key': theCatApiKey }
-	    	});
-	    	const breeds = await breedListResponse.body.json();
+			const breeds = await getApiBodyResponse('breeds');
 	    	const match = breeds.find(breed => breed.id === selectedBreed);
 	    	if (match) breedName = match.name;
 	    }
 
 	    const breedParam = selectedBreed ? `?breed_ids=${selectedBreed}` : '';
-	    const apiRequest = await request(`https://api.thecatapi.com/v1/images/search${breedParam}`, {
-	    	headers: { 'x-api-key': theCatApiKey }
-	    });
-	    const json = await apiRequest.body.json();
+		const json = await getApiBodyResponse(`images/search${breedParam}`);
 	    const response = json[0];
 
 	    const embed = new EmbedBuilder()
@@ -58,5 +57,5 @@ module.exports = {
 	    	.setImage(response.url);
 
 	    await interaction.editReply({ embeds: [embed] });
-    },
+	},
 };

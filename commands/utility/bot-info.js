@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const { primaryEmbedColor } = require('../../settings/config.json');
 const path = require('path');
-const package = require('../../package.json');
+const { description, github, version, dependencies } = require('../../package.json');
 
 module.exports = {
 	cooldown: 5,
@@ -14,17 +14,17 @@ module.exports = {
 		const imagePath = path.resolve(__dirname, '../../assets/images/gnu-logo-banner.png');
 		const imageAttachment = new AttachmentBuilder(imagePath, { name: 'gnu-logo-banner.png' });
 
-		const dependenciesFormatted = Object.entries(package.dependencies)
+		const dependenciesFormatted = Object.entries(dependencies)
 			.map(([key, value]) => `\`${key}\` (${value})`)
 			.join('\n');
-			
+
 		const embed = new EmbedBuilder()
 			.setColor(primaryEmbedColor)
-			.setDescription(`<:info:1386217256354054149> \`${package.description}\`
-		<:github:1386217246485119037> [View on GitHub](${package.github})`)
+			.setDescription(`\`${description}\`
+		[View on GitHub](${github})`)
 			.addFields(
 				{ name: 'Dependencies', value: dependenciesFormatted, inline: true },
-				{ name: 'Version', value: `\`v${package.version}\``, inline: true },
+				{ name: 'Version', value: `\`v${version}\``, inline: true },
 			)
 			.setImage('attachment://gnu-logo-banner.png');
 

@@ -11,7 +11,6 @@
   "license": "GNU",
   "dependencies": {
     "discord.js": "^14.20.0",
-    "node-fetch": "^3.3.2",
     "undici": "^7.10.0"
   },
   "devDependencies": {
