@@ -4,7 +4,8 @@ import tkinter as tk
 import atexit
 
 root = tk.Tk()
-output_box = create_ui(root)
+output_box, buttons = create_ui(root)
+buttons["stop"].config(state="disabled")
 
 atexit.register(stop_bot)
 root.mainloop()

@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import font
-from bot_process import start_bot, stop_bot
+from bot_process import start_bot, stop_bot, refresh_cmds
 from utils import rgb_to_hex
+from colors import COLOR_CONVERSIONS
 
 def create_ui(root):
     icon = tk.PhotoImage(file='assets/images/evil-cosmo.png')
     root.iconphoto(False, icon)
-    root.title("Bot Controller")
+    root.title("Bot Manager")
     root.configure(bg='#1e1e1e')
     root.geometry("500x400")
 
@@ -25,7 +26,7 @@ def create_ui(root):
 
     tk.Label(
         left_info_frame,
-        text="Bot Control",
+        text="Bot Manager",
         bg='#1e1e1e',
         fg='white',
         font=(ui_font.actual('family'), 14, 'bold')
@@ -60,22 +61,25 @@ def create_ui(root):
         fg="white",
         insertbackground="white",
         font=output_font,
-        wrap=tk.WORD
+        wrap=tk.WORD,
     )
     output_box.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+    output_box.bind("<Key>", lambda e: "break")
 
-    tk.Button(button_frame, text="Start Bot", command=lambda: start_bot(output_box), **style).pack(
-        side='top', anchor='e', pady=(0, 5), padx=5
-    )
-    tk.Button(button_frame, text="Stop Bot", command=stop_bot, **style).pack(
-        side='top', anchor='e', pady=(0, 5), padx=5
-    )
-    tk.Button(button_frame, text="Refresh Commands", command=stop_bot, **style).pack(
-        side='top', anchor='e', padx=5
-    )
+    start_button = tk.Button(button_frame, text="Start Bot", **style)
+    stop_button = tk.Button(button_frame, text="Stop Bot", **style)
+    refresh_button = tk.Button(button_frame, text="Refresh Commands", **style)
 
-    output_box.tag_config("js", foreground=rgb_to_hex(100, 180, 255))
-    output_box.tag_config("py", foreground=rgb_to_hex(90, 245, 90))
+    start_button.config(command=lambda: start_bot(output_box, start_button, stop_button, refresh_button))
+    stop_button.config(command=lambda: stop_bot(output_box, start_button, stop_button, refresh_button))
+    refresh_button.config(command=lambda: refresh_cmds(output_box, start_button, stop_button, refresh_button))
 
-    root.protocol("WM_DELETE_WINDOW", lambda: (stop_bot(), root.destroy()))
-    return output_box
+    start_button.pack(side='top', anchor='e', pady=(0, 5), padx=5)
+    stop_button.pack(side='top', anchor='e', pady=(0, 5), padx=5)
+    refresh_button.pack(side='top', anchor='e', padx=5)
+
+    for tag, rgb in COLOR_CONVERSIONS.items():
+        output_box.tag_config(tag, foreground=rgb_to_hex(*rgb))
+
+    root.protocol("WM_DELETE_WINDOW", lambda: (stop_bot(output_box, start_button, stop_button, refresh_button), root.destroy()))
+    return output_box, {"start": start_button, "stop": stop_button, "refresh": refresh_button}

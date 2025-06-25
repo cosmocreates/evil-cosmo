@@ -3,7 +3,7 @@ const { Events, MessageFlags, Collection } = require('discord.js');
 module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
-        const command = interaction.client.commands.get(interaction.commandName);
+		const command = interaction.client.commands.get(interaction.commandName);
 		const { cooldowns } = interaction.client;
 
 		if (!interaction.isChatInputCommand()) return;
@@ -21,7 +21,7 @@ module.exports = {
 
 			if (now < expirationTime) {
 				const expiredTimestamp = Math.round(expirationTime / 1_000);
-                const inTime = expirationTime < 10 ? `<t:${expiredTimestamp}:R>` : 'shortly'
+				const inTime = expirationTime < 10 ? `<t:${expiredTimestamp}:R>` : 'shortly';
 				return interaction.reply({ content: `You can use \`/${command.data.name}\` again ${inTime}.`, flags: MessageFlags.Ephemeral });
 			}
 		}
